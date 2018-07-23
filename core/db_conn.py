@@ -3,8 +3,9 @@ import pymongo
 import sys
 import traceback
 
+
 mongo_conf = config.MONGODB_CONFIG
-print(mongo_conf)
+# print(mongo_conf)
 class MongoConn(object):
     def __init__(self):
         try:
@@ -16,7 +17,6 @@ class MongoConn(object):
                 self.connected = self.db.authenticate(self.username, self.password)
             else:
                 self.connected = True
-            print('yes')
 
         except Exception:
             print(traceback.format_exc())
@@ -25,7 +25,25 @@ class MongoConn(object):
 
 
 
-test = MongoConn()
+db = MongoConn()
+# spider_col = db()
+
+from core import hx_news
+news = hx_news.news
+
+
+# json和写入文件
+import json
+newsobj = json.dumps(news)
+
+with open('test.txt','w+',) as f:
+    f.write(str(news))
+    f.close()
+
+
+
+
+
 
 
 

@@ -3,11 +3,11 @@ import pymongo
 
 
 MONGODB_CONFIG = {
-    'host' : '192.168.1.200',
+    'host' : '192.168.1.222',
     'port' : 27017,
     'db_name' : 'news_spider',
-    'username' : 'root',
-    'password' : 'gtl1023'
+    'username' : None,
+    'password' : None
 }
 
 
