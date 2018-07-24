@@ -1,57 +1,37 @@
-from conf import config
-import pymongo
-import sys
-import traceback
+from pymongo import MongoClient
+
+# from conf import config
+# mongo_conf = config.MONGODB_CONFIG
+def db_connected(db='news_spider', col='test',):
+    uri = "mongodb://root:gtl1023@192.168.1.200/?authSource=admin&authMechanism=SCRAM-SHA-1"
+    client = MongoClient(uri)
+    use_db = client[db]
+    if col is not 'test':
+        use_col = use_db[col]
+        return use_col
+    return use_db
 
 
-mongo_conf = config.MONGODB_CONFIG
-# print(mongo_conf)
-class MongoConn(object):
-    def __init__(self):
-        try:
-            self.conn = pymongo.MongoClient(mongo_conf['host'], mongo_conf['port'])
-            self.db = self.conn[mongo_conf['db_name']]
-            self.username = mongo_conf['username']
-            self.password = mongo_conf['password']
-            if self.username and self.password:
-                self.connected = self.db.authenticate(self.username, self.password)
-            else:
-                self.connected = True
+# # use db
+# test1 = db_connected()
+# col = test1['other']
+# post = {'myname':'sylar'}
+# col.insert_one(post)
+# x=test1.collection_names()
+# for i in x:
+#     print(i)
 
-        except Exception:
-            print(traceback.format_exc())
-            print('Connect Statics Database Fail.')
-            sys.exit(1)
+# use col
+# col = db_connected(col='one')
+# post = {'myname':'sylar'}
+# col.insert_one(post)
+# x=col.find()
+# for i in x:
+#     print(i)
 
-
-
-db = MongoConn()
-# spider_col = db()
-
-from core import hx_news
-news = hx_news.news
-
-
-# json和写入文件
-import json
-newsobj = json.dumps(news)
-
-with open('test.txt','w+',) as f:
-    f.write(str(news))
-    f.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
+# col = db_connected(col='hx_news')
+# x =col.find()
+# for i in x:print(i)
 
 
 

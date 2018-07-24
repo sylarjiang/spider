@@ -1,5 +1,8 @@
 from urllib import request as url_req
 from bs4 import BeautifulSoup as bsp4
+from core.db_conn import db_connected as db_func
+
+import datetime
 
 url = "http://www.huoxing24.com/"
 
@@ -83,15 +86,32 @@ all_news = []
 html = get_html_code(url)
 news_list = get_news_list(html)
 
+
 # for link in news_list:
 #     news = news_page_info(link)
-#     print(link)
-#     all_news.append(news_page_info(link))
-#
-# print(all_news)
+    # print(link)
+    # col = db_func(col='hx_news')
+    # col.insert_one(news)
 
-news = news_page_info('http://www.huoxing24.com/newsdetail/20180723155516105258.html')
+
+
+url = 'http://www.huoxing24.com/newsdetail/2018072119391794408.html'
+news = news_page_info(url)
+print(news)
+
+
+
 # print(news)
+
+
+
+# import json
+# news = str(all_news)
+# print(type(news))
+# with open('test.txt','wb+',) as f:
+#     f.write(bytes(news,encoding='utf8'))
+#     f.close()
+
 
 
 
