@@ -7,8 +7,14 @@ import datetime
 url = "http://www.huoxing24.com/"
 
 
-
-def filter_html_tags(htmlstr,html_tag='img'):
+# 字符过滤
+def filter_html_tags(htmlstr):
+    '''
+    清洗html文本中的指定标签，优化目标，动态载入过滤目标
+    大部分过滤注释
+    :param htmlstr: 包含html标签的字符文本
+    :return: 过滤后的字符文本
+    '''
     import re
     #先过滤CDATA
     # re_cdata = re.compile('//<!\[CDATA\[[^>]*//\]\]>',re.I) #匹配CDATA
@@ -30,9 +36,16 @@ def filter_html_tags(htmlstr,html_tag='img'):
     s = htmlstr.rstrip(']')
     return s
 
-def string_format(keyword,format_type=''):
+# 字符拼接
+def string_format(doc,format_type=''):
+    '''
+    拼接字符串
+    :param doc: 需要过滤的文本
+    :param format_type: 格式化连接时加入的分割符默认不加
+    :return:
+    '''
     word = []
-    for i in keyword:
+    for i in doc:
         if i.string is not None:
             word.append(str(i.string.strip()))
         else:
@@ -41,17 +54,28 @@ def string_format(keyword,format_type=''):
     kw = '%s'%format_type.join(str(i) for i in word)
     return kw
 
+
 # 获取页面源代码
 def get_html_code(url):
+    '''
+    伪装浏览器，将获取的页面使用beautifulsoup进行分析
+    :param url: 需要分析的页面url
+    :return: 返回soup对象
+    '''
     # print(url)          #打印地址,查看哪个链接报错
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
     req = url_req.Request(url,headers=headers)
     response = url_req.urlopen(req).read().decode()
-    html = bsp4(response, 'html.parser')
-    return html
+    soup = bsp4(response, 'html.parser')
+    return soup
 
-# 获取首页新闻列表,# 新闻链接地址
+# 新闻链接地址
 def get_news_list(html):
+    '''
+    将一个页面中的指定类型链接提取出来.通常为新闻的正文页地址
+    :param html: soup对象
+    :return: 返回一个网址列表
+    '''
     data = html.find_all('div',{'class':'index-news-list'})
     news_link_list = []
     for link in data:
@@ -59,7 +83,7 @@ def get_news_list(html):
         news_link_list.append(link)
     return news_link_list
 
-# 获取新闻内容,并处理需要的信息
+# 对正文页中内容处理,保留需要的信息
 def news_page_info(link):
     news = {}
     news_page = get_html_code(link)
@@ -87,30 +111,27 @@ html = get_html_code(url)
 news_list = get_news_list(html)
 
 
+# # 新闻列表页,收集link并处理正文
 # for link in news_list:
 #     news = news_page_info(link)
-    # print(link)
-    # col = db_func(col='hx_news')
-    # col.insert_one(news)
+#     all_news.append(news)
+#     col = db_func(col='hx_news')
+#     col.insert_one(news)
 
 
-
-url = 'http://www.huoxing24.com/newsdetail/2018072119391794408.html'
-news = news_page_info(url)
-print(news)
-
-
-
+# # 指定正文页测试
+url = 'http://www.huoxing24.com/newsdetail/20180724104534392494.html'
+# news = news_page_info(url)
 # print(news)
 
 
+col = db_func(col='hx_news')
+myquery = {'news_title': { '$regex': '^EOS'}}   #查询所有标题以EOS开始的新闻
+for i in col.find(myquery): print(i['news_link'])
 
-# import json
-# news = str(all_news)
-# print(type(news))
-# with open('test.txt','wb+',) as f:
-#     f.write(bytes(news,encoding='utf8'))
-#     f.close()
+
+
+
 
 
 
