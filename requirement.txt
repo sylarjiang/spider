@@ -1,0 +1,2 @@
+pymongo=3.7.1
+beautifulsoup=4.6.1
