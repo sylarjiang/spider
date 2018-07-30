@@ -33,7 +33,7 @@ def filter_html_tags(htmlstr):
     # blank_line = re.compile('\n+')
     # s = blank_line.sub('\n',s)
     s = htmlstr.lstrip('[')
-    s = htmlstr.rstrip(']')
+    s = s.rstrip(']')
     return s
 
 # 字符拼接
@@ -103,35 +103,67 @@ def news_page_info(link):
     #     news_content = news_content_code
     news_content = string_format(news_content_code)
     news['news_content'] = filter_html_tags(str(news_content))
-
+    news['news_published'] = 0
     return news
 
-all_news = []
+
+
 html = get_html_code(url)
 news_list = get_news_list(html)
+news_list = list(set(news_list))    # 这一步是去除掉重复的链接
 
-
-# # 新闻列表页,收集link并处理正文
-# for link in news_list:
-#     news = news_page_info(link)
-#     all_news.append(news)
-#     col = db_func(col='hx_news')
-#     col.insert_one(news)
+def update_news_content(news_list):
+    '''
+    传入一个链接列表,存储到mongodb
+    :param news_list:
+    :return:
+    '''
+    col = db_func(col='hx_news')
+    # col.delete_many({})
+    # 新闻列表页,收集link并处理正文
+    for link in news_list:
+        news = news_page_info(link)
+        col = db_func(col='hx_news')
+        col.insert_one(news)
 
 
 # # 指定正文页测试
-url = 'http://www.huoxing24.com/newsdetail/20180724104534392494.html'
+# url = 'http://www.huoxing24.com/newsdetail/20180724104534392494.html'
 # news = news_page_info(url)
 # print(news)
 
 
-col = db_func(col='hx_news')
-myquery = {'news_title': { '$regex': '^EOS'}}   #查询所有标题以EOS开始的新闻
-for i in col.find(myquery): print(i['news_link'])
 
 
+# # 数据库相关操作
+links_col = db_func(col='news_links')
+old_news_links = links_col.find({},{'_id':0})
+old_list = []
+for i in links_col.find():old_list.extend(i['new_links'])
+print(old_list)
+
+# 删除所有链接并重新保存一份
+# links_col.delete_many({})
+# links_col.insert_one({'_id':'news_links','new_links':news_list})
 
 
+# links_col.insert_one({'news_links':news_list})    #所有链接存为一个条目
+# for i in  links_col.find():                         #取链接
+#     print(type(i['news_links']),len(set(i['news_links'])))
+
+# x= links_col.find()                                  #查网址列表的key
+# for k in x:
+#     print(k.keys())
+
+# for k,v in enumerate(news_list,1):                #每个网址单独存一个条目
+#     key = 'link_addr%s'%k
+#     res={key: str(v)}
+#     links_col.insert_one(res)
+
+
+# col = db_func(col='hx_news')
+# myquery = {'news_title': { '$regex': '^EOS'}}   #查询所有标题以EOS开始的新闻
+# for i in col.find(myquery): print(i['news_link'])
 
 
 

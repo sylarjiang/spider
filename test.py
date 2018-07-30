@@ -1,6 +1,7 @@
 from core.db_conn import db_connected
 
 from pymongo import MongoClient
+from core.db_conn import db_connected as db_func
 
 # test_list = [{'_id':100, 'name':'tom', 'job': 'ops'},{'_id':99, 'name':'jerry', 'job': 'dev'}]
 #
@@ -10,5 +11,5 @@ from pymongo import MongoClient
 
 # db = db_connected()
 
-db = db_connected()
-for i in db.collection_names():print(i)
+col = db_func(col='hx_news')
+col.delete_many({})
