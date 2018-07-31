@@ -184,6 +184,7 @@ diff_links,news_links_update = links_changed(news_links)
 
 if len(diff_links) > 0:
     update_links(list(diff_links))
-    update_news_info(update_links)
+    update_news_info(diff_links,news_img_dict)
+print(diff_links)
 
 
