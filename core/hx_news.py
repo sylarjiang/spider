@@ -2,7 +2,10 @@ from urllib import request as url_req
 from bs4 import BeautifulSoup as bsp4
 from core.db_conn import db_connected as db_func
 
-import datetime
+
+import time
+
+
 
 url = "http://www.huoxing24.com/"
 
@@ -21,17 +24,19 @@ def filter_html_tags(htmlstr):
     # re_script = re.compile('<\s*script[^>]*>[^<]*<\s*/\s*script\s*>',re.I)#Script
     # re_style = re.compile('<\s*style[^>]*>[^<]*<\s*/\s*style\s*>',re.I)#style
     # re_br = re.compile('<br\s*?/?>')#处理换行
-    # re_p = re.compile('</?[^(img)]+[^>]*>') #除了img标签意外的html标签都删除
+    # re_p = re.compile('</?[^(img|^p)]+[^>]*>') #除了img标签意外的html标签都删除
+    # re_div = re.compile('</?[^div]+[^>]*>') #删除指定标签div
     re_comment = re.compile('<!--[^>]*-->')#HTML注释
 
     # s = re_cdata.sub('', htmlstr)#去掉CDATA
     # s = re_script.sub('', s) #去掉SCRIPT
     # s = re_style.sub('', s)#去掉style
     # s = re_br.sub('\n', s)#将br转换为换行
-    # s = re_p.sub('', s) #去掉HTML 标签
+    # s = re_p.sub('', htmlstr) #去掉HTML 标签
     # s = re_comment.sub('', s)
     # blank_line = re.compile('\n+')
     # s = blank_line.sub('\n',s)
+    # s = re_div.sub('',htmlstr)
     s = htmlstr.lstrip('[')
     s = s.rstrip(']')
     return s
@@ -69,26 +74,37 @@ def get_html_code(url):
     soup = bsp4(response, 'html.parser')
     return soup
 
-# 新闻链接地址
+
 def get_news_list(html):
     '''
-    将一个页面中的指定类型链接提取出来.通常为新闻的正文页地址
+    新闻链接地址
+    将一个页面中的指定类型链接提取出来.通常为新闻的正文页地址和图片
     :param html: soup对象
-    :return: 返回一个网址列表
+    :return: 返回字典 key为图片，val为地址
     '''
     data = html.find_all('div',{'class':'index-news-list'})
     news_link_list = []
+    news_img_dict = {}
     for link in data:
+        img = link.find_all('a')[0].find('img')['data-src']
         link = link.find_all('a')[0]['href']
         news_link_list.append(link)
-    return news_link_list
+        news_img_dict[str(link)] = str(img)
+    return news_link_list,news_img_dict
 
-# 对正文页中内容处理,保留需要的信息
-def news_page_info(link):
+#
+def news_page_info(link,img=None):
+    '''
+    对正文页中内容处理,保留需要的信息
+    :param link:
+    :param img: 首页缩略图
+    :return:
+    '''
     news = {}
     news_page = get_html_code(link)
     news['news_link'] = link
-    news['news_title'] = news_page.title.string
+    news['news_img'] = img
+    news['news_title'] = news_page.select('div.text-header > h1')[0].text.strip()
     news['news_author'] = news_page.select('div.issue-box > p.author > a')[0].text.strip()
     news['news_time'] = news_page.select('div.issue-box > p.time > span')[0].text.strip()
     news['news_keyword'] = string_format(news_page.find('div', {'class': 'text-header'}).find('p', {'class': 'keyword'}).find_all('a'),',')
@@ -103,44 +119,87 @@ def news_page_info(link):
     #     news_content = news_content_code
     news_content = string_format(news_content_code)
     news['news_content'] = filter_html_tags(str(news_content))
-    news['news_published'] = 0
+    news['status'] = 0
+    news['category_id'] = 0
+    news['scan_count '] = 0
     return news
+
+
+def get_old_news_links():
+    '''
+    读取存储爬取过的链接
+    :return:
+    '''
+    links_col = db_func(col='news_links')
+    old_list = []
+    for i in links_col.find({}, {'news_links': 1}): old_list.extend(i['news_links'])
+    return old_list
+
+def links_changed(news_links):
+    old_links = get_old_news_links()
+
+    # 获得总的新闻列表
+    news_links_update = set(news_links) | (set(old_links))
+    # 获得新产生的列表
+    diff_links = set(news_links) - (set(old_links))
+    return diff_links,news_links_update
+
+def update_links(links):
+    links_col= db_func(col='news_links')
+    # links_col.delete_many({})
+    today = time.strftime("%Y/%m/%d")
+    links_col.insert_one({'day': today, 'news_links': links})
 
 
 
 html = get_html_code(url)
-news_list = get_news_list(html)
-news_list = list(set(news_list))    # 这一步是去除掉重复的链接
+news_links, news_img_dict = get_news_list(html)
+# print(news_img_dict)
+news_links = set(news_links)
+diff_links,news_links_update = links_changed(news_links)
 
-def update_news_content(news_list):
-    '''
-    传入一个链接列表,存储到mongodb
-    :param news_list:
-    :return:
-    '''
-    col = db_func(col='hx_news')
-    # col.delete_many({})
-    # 新闻列表页,收集link并处理正文
-    for link in news_list:
-        news = news_page_info(link)
-        col = db_func(col='hx_news')
-        col.insert_one(news)
+if len(diff_links) > 0:
+    update_links(list(diff_links))
+
+
+
+
+
+
+
+
+# ###插入正文数据
+# col = db_func(col='hx_news')
+# col.delete_many({})
+# for link in news_links:
+#     if link in news_img_dict.keys():
+#         news_img = news_img_dict[link]
+#         news = news_page_info(link,news_img)
+#         col = db_func(col='hx_news')
+#         col.insert_one(news)
+
+
+# news_list = list(set(news_list))    # 这一步是去除掉重复的链接
+
+
+
+
+
+
+
+
 
 
 # # 指定正文页测试
-# url = 'http://www.huoxing24.com/newsdetail/20180724104534392494.html'
-# news = news_page_info(url)
-# print(news)
+# url = 'http://www.huoxing24.com/newsdetail/20180727181009412880.html'
+# news_page = get_html_code(url)
+# title = news_page.select('div.text-header > h1')[0].text.strip()
+#
+# print(title)
 
 
 
 
-# # 数据库相关操作
-links_col = db_func(col='news_links')
-old_news_links = links_col.find({},{'_id':0})
-old_list = []
-for i in links_col.find():old_list.extend(i['new_links'])
-print(old_list)
 
 # 删除所有链接并重新保存一份
 # links_col.delete_many({})
