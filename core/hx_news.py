@@ -128,7 +128,7 @@ def news_page_info(link,img=None):
 def get_old_news_links():
     '''
     读取存储爬取过的链接
-    :return:
+    :return: 返回数据库中存在的所有链接
     '''
     links_col = db_func(col='news_links')
     old_list = []
@@ -136,6 +136,10 @@ def get_old_news_links():
     return old_list
 
 def links_changed(news_links):
+    '''
+    传入一个网址链接列表和数据库中列表对比,返回新增和总列表
+    :return: diff_links新增,news_links_update更新后的列表
+    '''
     old_links = get_old_news_links()
 
     # 获得总的新闻列表
@@ -145,11 +149,31 @@ def links_changed(news_links):
     return diff_links,news_links_update
 
 def update_links(links):
+    '''
+    储存新的links地址
+    '''
     links_col= db_func(col='news_links')
     # links_col.delete_many({})
     today = time.strftime("%Y/%m/%d")
     links_col.insert_one({'day': today, 'news_links': links})
 
+
+
+def update_news_info(links,img_dict):
+    '''
+    传入需要抓取正文信息的地址列表和图片
+    :param links:
+    :param img_dict:
+    :return:
+    '''
+    col = db_func(col='hx_news')
+    # col.delete_many({})           #清空表重新生成newsinfo
+    for link in links:
+        if link in news_img_dict.keys():
+            news_img = img_dict[link]
+            news = news_page_info(link,news_img)
+            col = db_func(col='hx_news')
+            col.insert_one(news)
 
 
 html = get_html_code(url)
@@ -160,70 +184,6 @@ diff_links,news_links_update = links_changed(news_links)
 
 if len(diff_links) > 0:
     update_links(list(diff_links))
-
-
-
-
-
-
-
-
-# ###插入正文数据
-# col = db_func(col='hx_news')
-# col.delete_many({})
-# for link in news_links:
-#     if link in news_img_dict.keys():
-#         news_img = news_img_dict[link]
-#         news = news_page_info(link,news_img)
-#         col = db_func(col='hx_news')
-#         col.insert_one(news)
-
-
-# news_list = list(set(news_list))    # 这一步是去除掉重复的链接
-
-
-
-
-
-
-
-
-
-
-# # 指定正文页测试
-# url = 'http://www.huoxing24.com/newsdetail/20180727181009412880.html'
-# news_page = get_html_code(url)
-# title = news_page.select('div.text-header > h1')[0].text.strip()
-#
-# print(title)
-
-
-
-
-
-# 删除所有链接并重新保存一份
-# links_col.delete_many({})
-# links_col.insert_one({'_id':'news_links','new_links':news_list})
-
-
-# links_col.insert_one({'news_links':news_list})    #所有链接存为一个条目
-# for i in  links_col.find():                         #取链接
-#     print(type(i['news_links']),len(set(i['news_links'])))
-
-# x= links_col.find()                                  #查网址列表的key
-# for k in x:
-#     print(k.keys())
-
-# for k,v in enumerate(news_list,1):                #每个网址单独存一个条目
-#     key = 'link_addr%s'%k
-#     res={key: str(v)}
-#     links_col.insert_one(res)
-
-
-# col = db_func(col='hx_news')
-# myquery = {'news_title': { '$regex': '^EOS'}}   #查询所有标题以EOS开始的新闻
-# for i in col.find(myquery): print(i['news_link'])
-
-
+    update_news_info(update_links)
 
 
