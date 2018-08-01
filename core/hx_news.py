@@ -1,9 +1,7 @@
 from urllib import request as url_req
 from bs4 import BeautifulSoup as bsp4
 from core.db_conn import db_connected as db_func
-
-
-import time
+import time,sys
 
 
 
@@ -88,6 +86,7 @@ def get_news_list(html):
     for link in data:
         img = link.find_all('a')[0].find('img')['data-src']
         link = link.find_all('a')[0]['href']
+        if link in news_link_list:continue
         news_link_list.append(link)
         news_img_dict[str(link)] = str(img)
     return news_link_list,news_img_dict
@@ -100,6 +99,7 @@ def news_page_info(link,img=None):
     :param img: 首页缩略图
     :return:
     '''
+    print(link)
     news = {}
     news_page = get_html_code(link)
     news['news_link'] = link
@@ -119,9 +119,9 @@ def news_page_info(link,img=None):
     #     news_content = news_content_code
     news_content = string_format(news_content_code)
     news['news_content'] = filter_html_tags(str(news_content))
-    news['status'] = 0
-    news['category_id'] = 0
-    news['scan_count '] = 0
+    news['status'] = '0'
+    news['scan_count'] = 0
+    news['category_id'] = ''
     return news
 
 
@@ -143,10 +143,10 @@ def links_changed(news_links):
     old_links = get_old_news_links()
 
     # 获得总的新闻列表
-    news_links_update = set(news_links) | (set(old_links))
+    news_links_all = set(news_links) | (set(old_links))
     # 获得新产生的列表
     diff_links = set(news_links) - (set(old_links))
-    return diff_links,news_links_update
+    return diff_links,news_links_all
 
 def update_links(links):
     '''
@@ -157,34 +157,56 @@ def update_links(links):
     today = time.strftime("%Y/%m/%d")
     links_col.insert_one({'day': today, 'news_links': links})
 
+def http_status(link):
+    import requests
+    res = requests.get(link).status_code
+    return int(res)
 
 
 def update_news_info(links,img_dict):
     '''
-    传入需要抓取正文信息的地址列表和图片
+    传入需要抓取正文信息的地址列表和图片，间隔30秒抓取一次
     :param links:
     :param img_dict:
     :return:
     '''
+
+
     col = db_func(col='hx_news')
-    # col.delete_many({})           #清空表重新生成newsinfo
+    col.delete_many({})           #清空表重新生成newsinfo
+    i = 0
+    count = 10
     for link in links:
-        if link in news_img_dict.keys():
-            news_img = img_dict[link]
-            news = news_page_info(link,news_img)
+        link_status = http_status(link)
+        if link_status < 400:
+            if link in news_img_dict.keys():
+                news_img = img_dict[link]
+            else:
+                news_img = ''
+            news = news_page_info(link, news_img)
             col = db_func(col='hx_news')
             col.insert_one(news)
+
+        # i += 1
+        # if i > count :
+        #     time.sleep(30)
+        #     count = count+10
+
+
 
 
 html = get_html_code(url)
 news_links, news_img_dict = get_news_list(html)
-# print(news_img_dict)
-news_links = set(news_links)
-diff_links,news_links_update = links_changed(news_links)
+print(len(news_links),len(news_img_dict))
 
-if len(diff_links) > 0:
-    update_links(list(diff_links))
-    update_news_info(diff_links,news_img_dict)
-print(diff_links)
+news_links = set(news_links)
+diff_links,news_links_all = links_changed(news_links)
+
+
+# diff_links 只更新新的，news_links_update重新生成所有
+if len(news_links_all) > 0:
+    update_links(list(news_links_all))
+    update_news_info(news_links_all,news_img_dict)
+print(len(news_links_all))
 
 
