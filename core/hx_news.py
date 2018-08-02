@@ -22,7 +22,7 @@ def filter_html_tags(htmlstr):
     # re_script = re.compile('<\s*script[^>]*>[^<]*<\s*/\s*script\s*>',re.I)#Script
     # re_style = re.compile('<\s*style[^>]*>[^<]*<\s*/\s*style\s*>',re.I)#style
     # re_br = re.compile('<br\s*?/?>')#处理换行
-    # re_p = re.compile('</?[^(img|^p)]+[^>]*>') #除了img标签意外的html标签都删除
+    # re_p = re.compile('</?[^(img|p)]+[^>]*>') #除了img标签意外的html标签都删除
     # re_div = re.compile('</?[^div]+[^>]*>') #删除指定标签div
     re_comment = re.compile('<!--[^>]*-->')#HTML注释
 
@@ -154,7 +154,7 @@ def update_links(links):
     '''
     links_col= db_func(col='news_links')
     # links_col.delete_many({})
-    today = time.strftime("%Y/%m/%d")
+    today = time.strftime("%Y/%m/%d-%H:%M:%S")
     links_col.insert_one({'day': today, 'news_links': links})
 
 def http_status(link):
@@ -170,16 +170,14 @@ def update_news_info(links,img_dict):
     :param img_dict:
     :return:
     '''
-
-
-    col = db_func(col='hx_news')
-    col.delete_many({})           #清空表重新生成newsinfo
-    i = 0
-    count = 10
+    # col = db_func(col='hx_news')
+    # col.delete_many({})           #清空表重新生成newsinfo
+    # i = 0
+    # count = 10
     for link in links:
         link_status = http_status(link)
         if link_status < 400:
-            if link in news_img_dict.keys():
+            if link in img_dict.keys():
                 news_img = img_dict[link]
             else:
                 news_img = ''
