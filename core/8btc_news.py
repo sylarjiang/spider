@@ -113,7 +113,16 @@ def news_page_info(link,img=None):
     news['news_img'] = img
     if news_page.select('div.week-back') or news_page.select('div.zan-bodyer'):
         return None
-    news['news_title'] = news_page.select('div.article-title > h1')[0].text.strip()
+    # print(news_page)
+    if news_page.select('div.article-title > h1') is True:
+        print('1111')
+        news['news_title'] = news_page.select('div.article-title > h1')
+        print(news_page.select('div.article-title > h1'))
+    if news_page.select('article-content-title-box > div.title') is True:
+        print('2222')
+        news['news_title'] = news_page.select('article-content-title-box > div.title')[0].text.strip()
+    if news_page.select('a.author-a1') is True:
+        print(news_page.select('a.author-a1'))
     news['news_author'] = news_page.select('span.author-name')[0].text.strip()
     news['news_time'] = news_page.select('time')[0].text.strip()
     news['news_keyword'] = ''
@@ -148,6 +157,7 @@ def update_news_info(links,img_dict):
             if news is not None:
                 col = db_func(col='news_content')
                 col.insert_one(news)
+                print(news)
 
 
 
@@ -164,7 +174,7 @@ if len(news_links_all) > 0:
 
 
 
-
+# news_page_info('http://www.8btc.com/from-wall-street-to-crypto-why-top-talent-is-moving-to-blockchain','')
 
 
 

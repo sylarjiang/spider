@@ -202,9 +202,15 @@ diff_links,news_links_all = links_changed(news_links)
 
 
 # diff_links 只更新新的，news_links_update重新生成所有
-if len(news_links_all) > 0:
-    update_links(list(news_links_all))
-    update_news_info(news_links_all,news_img_dict)
-print(len(news_links_all))
+if len(diff_links) > 0:
+    update_links(list(diff_links))
+    update_news_info(diff_links,news_img_dict)
+print(len(diff_links))
+
+
+
+
+
+
 
 
