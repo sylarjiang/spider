@@ -1,7 +1,7 @@
 from urllib import request as url_req
 from bs4 import BeautifulSoup as bsp4
 from core.db_conn import db_connected as db_func
-import time,sys
+import time
 
 
 
@@ -194,18 +194,35 @@ def update_news_info(links,img_dict):
 
 
 html = get_html_code(url)
-news_links, news_img_dict = get_news_list(html)
-print(len(news_links),len(news_img_dict))
 
-news_links = set(news_links)
-diff_links,news_links_all = links_changed(news_links)
+data = html.find_all('div', {'class': 'index-news-list'})
+news_link_list = []
+news_img_dict = {}
+for link in data:
+    img = link.find_all('a')[0].find('img')['data-src']
+    link = link.find_all('a')[0]['href']
+    if link in news_link_list: continue
+    news_link_list.append(link)
+    news_img_dict[str(link)] = str(img)
 
 
-# diff_links 只更新新的，news_links_update重新生成所有
-if len(news_links_all) > 0:
-    update_links(list(news_links_all))
-    update_news_info(news_links_all,news_img_dict)
-print(len(news_links_all))
+
+
+# news_links, news_img_dict = get_news_list(html)
+# print(len(news_links),len(news_img_dict))
+
+# news_links = set(news_links)
+# diff_links,news_links_all = links_changed(news_links)
+
+
+
+
+
+
+# if len(news_links_all) > 0:
+#     update_links(list(news_links_all))
+#     update_news_info(news_links_all,news_img_dict)
+# print(len(news_links_all))
 
 
 

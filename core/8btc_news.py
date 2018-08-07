@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup as bsp4
 from core.db_conn import db_connected as db_func
 
 
+url = ['http://www.8btc.com/blockchain','http://www.8btc.com/bitcoin/page/']
 
-url = ['http://www.8btc.com/bitcoin/page/','http://www.8btc.com/blockchain']
 def get_html_code(url,link_type=None):
     chrome_option = Options()
     chrome_option.add_argument('--headless')
@@ -161,35 +161,35 @@ def update_news_info(links,news_img_dict):
 
 
 
-# blockchain
+for addr in url:
+    if addr == 'http://www.8btc.com/blockchain':
+        # blockchain
 
-# html = get_html_code(url,link_type='blockchain')
-# news_links, news_img_dict = get_news_list(html)
-# diff_links,news_links_all = links_changed(news_links)
-# print(news_img_dict)
-# if len(diff_links) > 0:
-#     update_links(list(diff_links))
-#     update_news_info(diff_links,news_img_dict)
-# print(len(news_links_all))
+        html = get_html_code(addr,link_type='blockchain')
+        news_links, news_img_dict = get_news_list(html)
+        diff_links,news_links_all = links_changed(news_links)
+        print(diff_links,news_img_dict)
+        if len(diff_links) > 0:
+            update_links(list(diff_links))
+            update_news_info(diff_links,news_img_dict)
 
-
-
-
-# bitcoin
-
-news_links = []
-news_img_dict = {}
-for i in range(1,4):
-    page = url+str(i)
-    html = get_html_code(page,'bitcoin')
-    page_links,page_img_dict = get_news_list(html)
-    news_links.extend(page_links)
-    news_img_dict.update(page_img_dict)
-diff_links,news_links_all = links_changed(news_links)
-print(diff_links)
-if len(diff_links) > 0:
-    update_links(list(diff_links))
-    update_news_info(diff_links,news_img_dict)
+    elif addr == 'http://www.8btc.com/bitcoin/page/':
+        # bitcoin
+        news_links = []
+        news_img_dict = {}
+        for i in range(1,4):
+            page = addr+str(i)
+            html = get_html_code(page,'bitcoin')
+            page_links,page_img_dict = get_news_list(html)
+            news_links.extend(page_links)
+            news_img_dict.update(page_img_dict)
+        diff_links,news_links_all = links_changed(news_links)
+        print(diff_links,news_img_dict)
+        if len(diff_links) > 0:
+            update_links(list(diff_links))
+            update_news_info(diff_links,news_img_dict)
+    else:
+        print('url wrong')
 
 
 
