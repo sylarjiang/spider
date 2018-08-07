@@ -12,8 +12,8 @@ def get_html_code(url,link_type=None):
     chrome_option.add_argument('--headless')
     chrome_option.add_argument('--disable-gpu')
     browserdrive = 'D:/git/spider/core/chromedriver.exe'
-    # driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
-    driver = webdriver.Chrome(executable_path=browserdrive)
+    driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
+    # driver = webdriver.Chrome(executable_path=browserdrive)
     driver.get(url)
 
     if link_type == 'blockchain':
@@ -52,6 +52,7 @@ def update_links(links):
     links_col= db_func(col='8btc_links')
     # links_col.delete_many({})
     today = time.strftime("%Y/%m/%d-%H:%M:%S")
+
     links_col.insert_one({'day': today, 'news_links': links})
 
 def get_old_news_links():
@@ -129,7 +130,7 @@ def news_page_info(link,img=None):
     if news_page.find('div', {'class': 'content-source-info'}) is True:
         news['news_source'] = news_page.find('div', {'class': 'content-source-info'}).get_text()
     else:
-        news['news_source'] = '8btc'
+        news['news_source'] = '巴比特'
     news['news_synopsis'] = ''
     news_content_code = news_page.find('div', {'class': 'article-content'})
     if news_content_code.find('div', {'class': 'content-bottom'}):
