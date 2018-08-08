@@ -8,12 +8,11 @@ from core.db_conn import db_connected as db_func
 
 
 url = 'https://www.jinse.com/'
-
+browserdrive = 'D:/git/spider/core/chromedriver.exe'
 def get_html_code(url,link_type=None):
     chrome_option = Options()
     chrome_option.add_argument('--headless')
     chrome_option.add_argument('--disable-gpu')
-    browserdrive = 'D:/git/spider/core/chromedriver.exe'
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
     # driver = webdriver.Chrome(executable_path=browserdrive)
     driver.get(url)
