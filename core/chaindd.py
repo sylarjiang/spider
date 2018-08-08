@@ -20,8 +20,8 @@ def get_html_code(url,link_type=None):
     chrome_option.add_argument('--headless')
     chrome_option.add_argument('--disable-gpu')
     browserdrive = 'D:/git/spider/core/chromedriver.exe'
-    driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
-    # driver = webdriver.Chrome(executable_path=browserdrive)
+    # driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
+    driver = webdriver.Chrome(executable_path=browserdrive)
     driver.get(url)
     # while driver.find_element_by_class_name('load_more'):
     if link_type == None:
@@ -163,21 +163,6 @@ if len(diff_links) > 0:
 
 
 
-# for link in links:
-#     link_status = http_status(link)
-#     if link_status < 400:
-#         if link in news_img_dict.keys():
-#             news_img = news_img_dict[link]
-#         else:
-#             news_img = ''
-#         news = news_page_info(link, news_img)
-#
-#     # if news is not None:
-#     #     col = db_func(col='8btc_news_content')
-#     #     col.insert_one(news)
-
-# update_links(list(diff_links))
-# update_news_info(diff_links, news_img_dict)
 
 
 

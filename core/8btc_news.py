@@ -194,11 +194,6 @@ for addr in url:
 
 
 
-
-
-
-
-
 # print(len(news_links_all))
 
 
