@@ -1,17 +1,27 @@
 ### install
 
 ```
+yum install gcc gcc-devel zlib-devel git
+https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
+tar -zxvf Python-3.6.4.tgz
+cd Python-3.6.4/
+./configure --prefix=/usr/local/python3
+
+make && make install
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+
+cd /data
 python3 -m venv py3
 ```
 ```
-linux autoenv
+# linux autoenv
 git clone git://github.com/kennethreitz/autoenv.git
-
-echo 'source /opt/autoenv/activate.sh' >> ~/.bashrc
-
+echo 'source /data/autoenv/activate.sh' >> ~/.bashrc
 source ~/.bashrc
 
-echo "source /some_path/py3/bin/activate" > /opt/some_project/.env
+# config autoenv
+git clone http://192.168.1.234/sylar/news_spider.git
+echo "source /data/py3/bin/activate" > /data/news_spider/.env
 ```
 
 
