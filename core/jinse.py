@@ -9,12 +9,6 @@ from core.db_conn import db_connected as db_func
 
 url = 'https://www.jinse.com/'
 
-def date_yesterday():
-    from datetime import timedelta,datetime
-    yesterday = datetime.today() + timedelta(-1)
-    yesterday_s = yesterday.strftime("%Y/%m/%d")
-    return yesterday_s
-
 def get_html_code(url,link_type=None):
     chrome_option = Options()
     chrome_option.add_argument('--headless')
@@ -23,7 +17,7 @@ def get_html_code(url,link_type=None):
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
     # driver = webdriver.Chrome(executable_path=browserdrive)
     driver.get(url)
-    # while driver.find_element_by_class_name('load_more'):
+
     if link_type == None:
         for i in range(5):
             # driver.find_element_by_id('custom-click-loade').click()
@@ -49,16 +43,18 @@ def get_news_list(html):
         if link_code['href']:
             link = link_code['href'].strip()
         if link in news_link_list: continue
+        if link.startswith('http') is False: continue
         news_link_list.append(link)
         news_img_dict[link] = img
     return news_link_list, news_img_dict
 
 
 def get_old_news_links():
-    links_col = db_func(col='js_links')
+    col = db_func(col='js_news_content')
     old_list = []
-    for i in links_col.find({}, {'news_links': 1}):
-        old_list.extend(i['news_links'])
+    for i in col.find({}, {'news_link': 1}):
+        if i['news_link'].find('jinse'):
+            old_list.append(i['news_link'])
     return old_list
 
 def links_changed(news_links):
@@ -67,12 +63,6 @@ def links_changed(news_links):
     diff_links = set(news_links) - (set(old_links))
     return diff_links,news_links_all
 
-def update_links(links):
-    links_col= db_func(col='js_links')
-    # links_col.delete_many({})
-    today = time.strftime("%Y/%m/%d-%H:%M:%S")
-    links_col.insert_one({'day': today, 'news_links': links})
-
 def http_status(link):
     import requests
     res = requests.get(link).status_code
@@ -80,8 +70,6 @@ def http_status(link):
 
 def filter_html_tags(htmlstr):
     import re
-    # re_comment = re.compile('<!--[^>]*-->')#HTML注释
-    re_a = re.compile('<\s*a[^>]*>[^<]*<\s*/\s*a\s*>', re.I)
     re_a = re.compile('</?a[^>]*>', re.I)
     s = htmlstr.lstrip('[')
     s = s.rstrip(']')
@@ -92,19 +80,18 @@ def string_format(doc,format_type=''):
     word = []
     for i in doc:
         if i.string is not None:
-            word.append(str(i.string.strip()))
+            word.append(str(i.string).strip())
         else:
-            word.append(str(i))
+            word.append(str(i).strip())
     kw = '%s'%format_type.join(str(i) for i in word)
     return kw
-
-
 
 def news_page_info(link,img=''):
 
     news = {}
     news_page = get_html_code(link, 'news_info')
-
+    today = time.strftime("%Y/%m/%d-%H:%M:%S")
+    news['spider_time'] = today
     news['news_link'] = link
     news['news_img'] = img
     if news_page.find('h2'):
@@ -123,11 +110,13 @@ def news_page_info(link,img=''):
     if news_page.find('div', class_=['js-article-detail']):
         news_content_code = news_page.find('div', class_=['js-article-detail'])
 
+    for i in news_content_code(text=lambda text: isinstance(text, Comment)):
+        i.extract()
+
     news['news_content'] = str(filter_html_tags(string_format(news_content_code)))
     news['status'] = '0'
     news['scan_count'] = 0
     news['category_id'] = ''
-    print(news,type(news))
     return news
 
 def update_news_info(links,news_img_dict):
@@ -148,10 +137,9 @@ def update_news_info(links,news_img_dict):
 html = get_html_code(url)
 news_link_list, news_img_dict = get_news_list(html)
 diff_links,news_links_all = links_changed(news_link_list)
-print(diff_links)
+
 
 if len(diff_links) > 0:
-    update_links(list(diff_links))
     update_news_info(diff_links, news_img_dict)
 
 

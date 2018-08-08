@@ -17,8 +17,11 @@ echo "source /some_path/py3/bin/activate" > /opt/some_project/.env
 
 ```
 webdrive
-http://chromedriver.storage.googleapis.com/2.41/notes.txt #need more env for linux
-https://developers.google.com/web/updates/2017/04/headless-chrome
+https://www.seleniumhq.org/docs/03_webdriver.jsp        #doc
+https://sites.google.com/a/chromium.org/chromedriver/downloads #download
+http://chromedriver.storage.googleapis.com/2.41/notes.txt #webdrive support chrome version
+
+#https://developers.google.com/web/updates/2017/04/headless-chrome
 
 # http://phantomjs.org/download.html   # version 2.1.1 windows # drop
 
@@ -29,4 +32,11 @@ https://developers.google.com/web/updates/2017/04/headless-chrome
 
 ```
 requests 检查状态码
+```
+
+
+
+```
+pip install pipreqs
+pipreqs ./ --force
 ```
