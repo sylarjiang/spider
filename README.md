@@ -3,7 +3,7 @@
 ```
 # install python3
 sudo yum install -y epel-release
-yum install gcc gcc-devel zlib-devel git  openssl-devel chromium Xvfb  xorg-x11-fonts*
+yum install -y gcc gcc-devel zlib-devel git openssl-devel chromium Xvfb readline-devel xorg-x11-fonts*
 wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
 tar -zxvf Python-3.6.4.tgz
 cd Python-3.6.4/
@@ -78,9 +78,9 @@ ln -s /usr/lib64/chromium-browser/chromium-browser.sh /usr/bin/chromium
 mv /usr/bin/chromium-browser ~/
 ln -s /usr/bin/xvfb-chromium /usr/bin/chromium-browser
 ln -s /usr/bin/xvfb-chromium /usr/bin/google-chrome
-
-
-
+chmod +x /usr/bin/chromedriver
+chmod +x /usr/bin/xvfb-chromium
+chmod +x /usr/lib64/chromium-browser/chromium-browser.sh
 
 ```
 

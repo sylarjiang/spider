@@ -1,5 +1,4 @@
-from core import news_chaindd,news_8btc
-from drop import news_jinse
+from core import news_chaindd, news_8btc, news_jinse
 from conf import config
 import time
 
