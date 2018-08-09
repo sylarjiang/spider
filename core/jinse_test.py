@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 import time
 from bs4 import BeautifulSoup as bsp4
 from bs4 import Comment
-from core import common
+from drop import common
 from core.db_conn import db_connected as db_func
 from conf import config
 
@@ -104,7 +104,7 @@ def main(browserdrive):
     url = 'https://www.jinse.com/'
     html = get_html_code(url,browserdrive)
     news_link_list, news_img_dict = get_news_list(html)
-    diff_links,news_links_all = common.links_changed(news_link_list,news_web_name)
+    diff_links,news_links_all = common.links_changed(news_link_list, news_web_name)
     if len(diff_links) > 0:
         update_news_info(diff_links, news_img_dict,browserdrive)
 
