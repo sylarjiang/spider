@@ -3,7 +3,7 @@
 ```
 # install python3
 sudo yum install -y epel-release
-yum install -y gcc gcc-devel zlib-devel git openssl-devel chromium Xvfb readline-devel xorg-x11-fonts*
+yum install -y gcc gcc-devel zlib-devel git openssl-devel Xvfb readline-devel xorg-x11-fonts*
 wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
 tar -zxvf Python-3.6.4.tgz
 cd Python-3.6.4/
@@ -42,11 +42,26 @@ http://chromedriver.storage.googleapis.com/2.41/notes.txt #webdrive support chro
 
 # https://github.com/mozilla/geckodriver/releases   # firefox drop
 ```
+```
+cat << EOF > /etc/yum.repos.d/google-chrome.repo
+[google-chrome]
+name=google-chrome
+baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=https://dl.google.com/linux/linux_signing_key.pub
+EOF
+yum install google-chrome-stable
+
+cp core/chromedriver /usr/bin/
+chmod +x /usr/bin/chromedriver
+
+```
 
 ```
 # webdirve install(not GUI)
 cp /data/spider/core/chromedriver /usr/bin/
-vi /usr/bin
+
 tee /usr/bin/xvfb-chromium >EOF
 #!/bin/bash
 

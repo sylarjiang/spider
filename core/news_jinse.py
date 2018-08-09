@@ -13,6 +13,7 @@ def get_html_code(url,link_type=None):
     chrome_option = Options()
     chrome_option.add_argument('--headless')
     chrome_option.add_argument('--disable-gpu')
+    chrome_option.add_argument('--nosandbox')
     # browserdrive = 'D:/git/spider/core/chromedriver.exe'
     browserdrive = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
