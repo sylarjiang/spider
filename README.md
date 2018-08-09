@@ -54,3 +54,20 @@ requests 检查状态码
 pip install pipreqs
 pipreqs ./ --force
 ```
+
+```
+# install mongodb
+tee /etc/yum.repos.d/mongodb3.6.repo <<-EOF
+[mongodb3.6]
+name=MongoDB Repository aliyun
+baseurl=https://mirrors.aliyun.com/mongodb/yum/redhat/7Server/mongodb-org/3.6/x86_64/
+gpgcheck=0
+enabled=1
+EOF
+yum install mongodb-org-* -y
+sudo mkdir /data/mongodb/{run,log,lib/mongodb} -p
+sudo chown mongod.mongod -R /data/mongodb
+
+
+
+```

@@ -7,7 +7,8 @@ from core.db_conn import db_connected as db_func
 
 
 
-url = 'http://www.8btc.com/blockchain'
+# url = 'http://www.8btc.com/blockchain'
+url = ['http://www.8btc.com/blockchain','http://www.8btc.com/bitcoin/page/']
 
 def get_html_code(url,link_type=None):
     chrome_option = Options()
@@ -25,6 +26,7 @@ def get_html_code(url,link_type=None):
             time.sleep(3)
     web_code = driver.page_source
     html = bsp4(web_code, 'html.parser')
+    driver.quit()
     return html
 
 
@@ -49,7 +51,7 @@ def get_news_list(html):
 
 
 def get_old_news_links():
-    col = db_func(col='8btc_news_content')
+    col = db_func(col='news_content')
     old_list = []
     for i in col.find({}, {'news_link': 1}):
         if i['news_link'].find('jinse'):
@@ -139,30 +141,56 @@ def update_news_info(links,news_img_dict):
             news = news_page_info(link, news_img)
 
             if news is not None:
-                col = db_func(col='8btc_news_content')
+                col = db_func(col='news_content')
                 col.insert_one(news)
 
-html = get_html_code(url)
-news_link_list, news_img_dict = get_news_list(html)
 
-diff_links,news_links_all = links_changed(news_link_list)
-print(diff_links)
+
+def main():
+    for addr in url:
+        if addr == 'http://www.8btc.com/blockchain':
+            # blockchain
+
+            html = get_html_code(addr,link_type='blockchain')
+            news_links, news_img_dict = get_news_list(html)
+            diff_links,news_links_all = links_changed(news_links)
+            print(diff_links)
+            if len(diff_links) > 0:
+                update_news_info(diff_links,news_img_dict)
+        elif addr == 'http://www.8btc.com/bitcoin/page/':
+            # bitcoin
+            news_links = []
+            news_img_dict = {}
+            for i in range(1,4):
+                page = addr+str(i)
+                html = get_html_code(page,'bitcoin')
+                page_links,page_img_dict = get_news_list(html)
+                news_links.extend(page_links)
+                news_img_dict.update(page_img_dict)
+            diff_links,news_links_all = links_changed(news_links)
+            print(diff_links)
+            if len(diff_links) > 0:
+                update_news_info(diff_links,news_img_dict)
+        else:
+            print('url wrong')
+
+if __name__ == '__main__':
+    main()
+
+
+
+
+
+
+# html = get_html_code(url)
+# news_link_list, news_img_dict = get_news_list(html)
 #
-#
-if len(diff_links) > 0:
-    update_news_info(diff_links, news_img_dict)
-
-
-
-
-
-
-
-
-
-
-
-
+# diff_links,news_links_all = links_changed(news_link_list)
+# print(diff_links)
+# #
+# #
+# if len(diff_links) > 0:
+#     update_news_info(diff_links, news_img_dict)
 
 
 

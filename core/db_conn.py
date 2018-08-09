@@ -1,7 +1,5 @@
 from pymongo import MongoClient
 
-# from conf import config
-# mongo_conf = config.MONGODB_CONFIG
 
 def db_connected(db='news_spider', col=None,):
     '''
@@ -24,15 +22,6 @@ def db_connected(db='news_spider', col=None,):
     return use_col
 
 
-# uri = 'mongodb://root:saS8dhdsjkJDAJ88d3vuHD@35.190.172.26/?authSource=hx_news&authMechanism=SCRAM-SHA-1'
-# uri = "mongodb://root:gtl1023@192.168.1.200/"
-# clent = MongoClient(uri)
-# db = clent['news_spider']
-# col = db['hx_news']
-# # col = db_connected(col='news_spider')
-# # col.find()
-# for i in col.find():
-#     print(i)
 
 
 

@@ -1,4 +1,3 @@
-import pymongo
 
 
 
@@ -10,7 +9,7 @@ MONGODB_CONFIG = {
     'password' : 'gtl1023'
 }
 
-
+browserdrive = 'D:/git/spider/core/chromedriver.exe'
 
 
 

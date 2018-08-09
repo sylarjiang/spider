@@ -148,7 +148,7 @@ def news_page_info(link,img=None):
 
 def update_news_info(links,news_img_dict):
     for link in links:
-        print(link)
+        news = None
         link_status = http_status(link)
         if link_status < 400:
             if link in news_img_dict.keys():
