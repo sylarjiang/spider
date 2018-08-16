@@ -60,43 +60,15 @@ chmod +x /usr/bin/chromedriver
 
 ```
 # webdirve install(not GUI)
-cp /data/spider/core/chromedriver /usr/bin/
+yuminstall xfvb chrome
 
-tee /usr/bin/xvfb-chromium >EOF
-#!/bin/bash
+and
+ln -s /some_path/webdrive /usr/bin/
 
-_kill_procs() {
-  kill -TERM $chromium
-  wait $chromium
-  kill -TERM $xvfb
-}
+echo 'Xvfb -ac :99 -screen 0 1280x1024x16 & export DISPLAY=:99' > /etc/rc.d/rc.local
 
-# Setup a trap to catch SIGTERM and relay it to child processes
-trap _kill_procs SIGTERM
-
-XVFB_WHD=${XVFB_WHD:-1280x720x16}
-
-# Start Xvfb
-Xvfb :99 -ac -screen 0 $XVFB_WHD -nolisten tcp &
-xvfb=$!
-
-export DISPLAY=:99
-
-chromium --no-sandbox --disable-gpu$@ &
-chromium=$!
-
-wait $chromium
-wait $xvfb
-EOF
-
-ln -s /usr/lib64/chromium-browser/chromium-browser.sh /usr/bin/chromium
-mv /usr/bin/chromium-browser ~/
-ln -s /usr/bin/xvfb-chromium /usr/bin/chromium-browser
-ln -s /usr/bin/xvfb-chromium /usr/bin/google-chrome
-chmod +x /usr/bin/chromedriver
-chmod +x /usr/bin/xvfb-chromium
-chmod +x /usr/lib64/chromium-browser/chromium-browser.sh
-
+# kill chrome
+ps -ef |grep chrome |grep -v grep |awk '{print $2}'|xargs kill -9
 ```
 
 ```
@@ -165,5 +137,22 @@ db.createUser({
         db:"news_spider"
     }]
 })
+
+```
+
+
+```
+cron.sh
+#!/bin/bash
+
+cd /data/spider/
+/data/py3/bin/python /data/spider/main.py >> /data/spider/spider_log 2>&1
+echo `date '+%Y-%m-%d_%H:%M:%S'` >> /data/spider/spider_log
+sleep 3
+echo `ps -ef |grep chrome |grep -v grep |awk '{print $2}' |wc -l` >> /data/spider/spider_log
+
+echo '--------------------------'
+
+*/60 * * * * /bin/bash /data/spider/cron.sh
 
 ```
