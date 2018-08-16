@@ -120,6 +120,8 @@ def news_page_info(link,img=''):
     news['status'] = '0'
     news['scan_count'] = 0
     news['category_id'] = ''
+    from hashlib import md5
+    news['news_md5'] = str(md5(news['news_content'].encode()).hexdigest())
 
     return news
 

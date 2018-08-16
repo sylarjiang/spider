@@ -24,7 +24,6 @@ def get_html_code(url,link_type=None):
 
     if link_type == None:
         for i in range(5):
-            # driver.find_element_by_id('custom-click-loade').click()
             driver.execute_script('window.scrollTo(0,document.body.scrollHeight)')
             time.sleep(3)
     web_code = driver.page_source
@@ -62,12 +61,7 @@ def get_old_news_md5(news_md5):
             if news_md5 == i['news_md5'] :
                 return True
     return False
-#
-# def links_changed(news_links):
-#     old_links = get_old_news_links()
-#     news_links_all = set(news_links) | (set(old_links))
-#     diff_links = set(news_links) - (set(old_links))
-#     return diff_links,news_links_all
+
 
 def http_status(link):
     import requests
@@ -134,83 +128,38 @@ def news_page_info(link,img=''):
 def update_news_info(links,news_img_dict):
     for link in links:
         news = None
-        # link_status = http_status(link)
-        # if link_status < 400:
         if link in news_img_dict.keys():
             news_img = news_img_dict[link]
         else:
             news_img = ''
         news = news_page_info(link, news_img)
         md5_checked = get_old_news_md5(news['news_md5'])
-        print(news['news_title'])
-        print(md5_checked)
         if md5_checked is True:
             continue
         if news is not None:
             col = db_func(col='news_content')
             col.insert_one(news)
 
-
-
-html = get_html_code(url)
-news_links, news_img_dict = get_news_list(html)
-print("8btc_blockchain:",news_links)
-if len(news_links) > 0:
-    update_news_info(news_links,news_img_dict)
-
-
-
-link = 'http://www.8btc.com/article/253833'
+def main():
+    html = get_html_code(url)
+    news_links, news_img_dict = get_news_list(html)
+    print("8btc_blockchain:",news_links)
+    if len(news_links) > 0:
+        update_news_info(news_links,news_img_dict)
 
 
 
 
 
-# def main():
-#     for addr in url:
-#         if addr == 'https://www.8btc.com/news?cat_id=413':
-#             # blockchain
-#
-#             html = get_html_code(addr,link_type='blockchain')
-#             news_links, news_img_dict = get_news_list(html)
-#             diff_links,news_links_all = links_changed(news_links)
-#             print("8btc_blockchain",diff_links)
-#             if len(diff_links) > 0:
-#                 update_news_info(diff_links,news_img_dict)
-#         elif addr == 'https://www.8btc.com/p/bitcoin':
-#             # bitcoin
-#             news_links = []
-#             news_img_dict = {}
-#             for i in range(1,4):
-#                 page = addr+str(i)
-#                 html = get_html_code(page,'bitcoin')
-#                 page_links,page_img_dict = get_news_list(html)
-#                 news_links.extend(page_links)
-#                 news_img_dict.update(page_img_dict)
-#             diff_links,news_links_all = links_changed(news_links)
-#             print("8btc_bitcoin",diff_links)
-#             if len(diff_links) > 0:
-#                 update_news_info(diff_links,news_img_dict)
-#         else:
-#             print('url wrong')
 
-# if __name__ == '__main__':
-#     main()
-#
+if __name__ == '__main__':
+    main()
 
 
 
 
 
-# html = get_html_code(url)
-# news_link_list, news_img_dict = get_news_list(html)
-#
-# diff_links,news_links_all = links_changed(news_link_list)
-# print(diff_links)
-# #
-# #
-# if len(diff_links) > 0:
-#     update_news_info(diff_links, news_img_dict)
+
 
 
 
