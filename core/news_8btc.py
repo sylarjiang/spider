@@ -18,11 +18,11 @@ def get_html_code(url,link_type=None):
     chrome_option.add_argument('--no-sandbox')
 
     # winconf
-    browserdrive = 'D:/git/spider/core/chromedriver.exe'
-    driver = webdriver.Chrome(executable_path=browserdrive)
+    # browserdrive = 'D:/git/spider/core/chromedriver.exe'
+    # driver = webdriver.Chrome(executable_path=browserdrive)
     # linux
-    # browserdrive = '/usr/bin/chromedriver'
-    # driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
+    browserdrive = '/usr/bin/chromedriver'
+    driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
 
     driver.get(url)
 
