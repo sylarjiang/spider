@@ -9,6 +9,7 @@ MONGODB_CONFIG = {
     'password' : 'gtl1023'
 }
 
+# browserdrive = '/usr/bin/chromedriver'
 browserdrive = 'D:/git/spider/core/chromedriver.exe'
 
 
