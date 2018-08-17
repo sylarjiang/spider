@@ -113,7 +113,8 @@ logappend = true
 FOE
 
 systemctl enable mongod
-systemctl start mongod
+systemctl start mongod                   
+#or : echo "/usr/bin/mongod -f /etc/mongod.conf" >> /etc/rc.d/rc.local
 mongo --host 10.138.0.33 --port 27017
 ### mongo shell
 
