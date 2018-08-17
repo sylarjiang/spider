@@ -128,17 +128,19 @@ def news_page_info(link,img=''):
 def update_news_info(links,news_img_dict):
     for link in links:
         news = None
-        if link in news_img_dict.keys():
-            news_img = news_img_dict[link]
-        else:
-            news_img = ''
-        news = news_page_info(link, news_img)
-        md5_checked = get_old_news_md5(news['news_md5'])
-        if md5_checked is True:
-            continue
-        if news is not None:
-            col = db_func(col='news_content')
-            col.insert_one(news)
+        link_status = http_status(link)
+        if link_status < 400:
+            if link in news_img_dict.keys():
+                news_img = news_img_dict[link]
+            else:
+                news_img = ''
+            news = news_page_info(link, news_img)
+            md5_checked = get_old_news_md5(news['news_md5'])
+            if md5_checked is True:
+                continue
+            if news is not None:
+                col = db_func(col='news_content')
+                col.insert_one(news)
 
 def main():
     html = get_html_code(url)
