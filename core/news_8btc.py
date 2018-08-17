@@ -3,12 +3,11 @@ from selenium.webdriver.chrome.options import Options
 import time
 from bs4 import BeautifulSoup as bsp4
 from bs4 import Comment
-from hashlib import md5
 from core.db_conn import db_connected as db_func
+from conf import config
 
 
 
-# url = 'http://www.8btc.com/blockchain'
 url = 'https://www.8btc.com/news'
 
 def get_html_code(url,link_type=None):
@@ -17,11 +16,8 @@ def get_html_code(url,link_type=None):
     chrome_option.add_argument('--disable-gpu')
     chrome_option.add_argument('--no-sandbox')
 
-    # winconf
-    browserdrive = 'D:/git/spider/core/chromedriver.exe'
+    browserdrive = config.browserdrive
     # driver = webdriver.Chrome(executable_path=browserdrive)
-    # linux
-    # browserdrive = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
 
     driver.get(url)
@@ -113,7 +109,7 @@ def news_page_info(link,img=''):
         news['news_time'] = news_time.get_text().strip()
 
     news['news_keyword'] = ''
-    news['news_source'] = '8btc'
+    news['news_source'] = 'www.8btc.com'
     news['news_synopsis'] = ''
 
     news_content_code = news_page.find('div', {'class': 'bbt-html'})
@@ -147,12 +143,9 @@ def update_news_info(links,news_img_dict):
 def main():
     html = get_html_code(url)
     news_links, news_img_dict = get_news_list(html)
-    print("8btc_blockchain:",news_links)
+    print('8btc>>>>>: ',news_links)
     if len(news_links) > 0:
         update_news_info(news_links,news_img_dict)
-
-
-
 
 
 
@@ -161,6 +154,9 @@ if __name__ == '__main__':
 
 
 
+# link = 'https://www.8btc.com/article/253950'
+#
+# news_page = get_html_code(link, 'news_info')
 
 
 

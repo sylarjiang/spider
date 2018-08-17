@@ -24,7 +24,7 @@ source ~/.bashrc
 
 # config autoenv
 git clone http://192.168.1.234/sylar/news_spider.git
-echo "source /data/py3/bin/activate" > /data/news_spider/.env
+echo "source /data/py3/bin/activate" > /data/spider/.env
 
 pip install -r requirements.txt
 ```

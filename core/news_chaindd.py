@@ -4,7 +4,7 @@ import time
 from bs4 import BeautifulSoup as bsp4
 from bs4 import Comment
 from core.db_conn import db_connected as db_func
-
+from conf import config
 
 
 url = 'http://www.chaindd.com'
@@ -15,12 +15,11 @@ def get_html_code(url,link_type=None):
     chrome_option.add_argument('--headless')
     chrome_option.add_argument('--disable-gpu')
     chrome_option.add_argument('--no-sandbox')
-    # winconf
-    # browserdrive = 'D:/git/spider/core/chromedriver.exe'
+
+    browserdrive = config.browserdrive
     # driver = webdriver.Chrome(executable_path=browserdrive)
-    # linux
-    browserdrive = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
+
     driver.get(url)
 
     if link_type == None:
@@ -91,7 +90,7 @@ def string_format(doc,format_type=''):
 
 
 def news_page_info(link,img=''):
-    print(link)
+
     news = {}
     news_page = get_html_code(link, 'news_info')
     today = time.strftime("%Y/%m/%d-%H:%M:%S")
@@ -108,7 +107,7 @@ def news_page_info(link,img=''):
         news['news_time'] = news_page.find('span', class_='time').get_text().strip()
 
     news['news_keyword'] = ''
-    news['news_source'] = 'chaindd'
+    news['news_source'] = 'www.chaindd.com'
 
     if news_page.find('p', class_='post-abstract'):
         news['news_synopsis'] = news_page.find('p', class_='post-abstract').get_text().strip()
@@ -147,7 +146,7 @@ def main():
     news_link_list, news_img_dict = get_news_list(html)
     diff_links,news_links_all = links_changed(news_link_list)
     if len(diff_links) > 0:
-        print(diff_links)
+        print('chaindd>>>>>: ',diff_links)
         update_news_info(diff_links, news_img_dict)
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ import time
 from bs4 import BeautifulSoup as bsp4
 from bs4 import Comment
 from core.db_conn import db_connected as db_func
-
+from conf import config
 
 
 url = 'https://www.jinse.com/'
@@ -13,13 +13,12 @@ def get_html_code(url,link_type=None):
     chrome_option = Options()
     chrome_option.add_argument('--headless')
     chrome_option.add_argument('--disable-gpu')
-    chrome_option.add_argument('--nosand-box')
-    # winconf
-    browserdrive = 'D:/git/spider/core/chromedriver.exe'
+    chrome_option.add_argument('--no-sandbox')
+
+    browserdrive = config.browserdrive
     # driver = webdriver.Chrome(executable_path=browserdrive)
-    # linux
-    # browserdrive = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
+
     driver.get(url)
 
     if link_type == None:
@@ -109,7 +108,7 @@ def news_page_info(link,img=''):
         news['news_time'] = news_page.find('div', class_='time').get_text().strip()
 
     news['news_keyword'] = ''
-    news['news_source'] = 'jinsecaijing'
+    news['news_source'] = 'www.jinse.com'
     news['news_synopsis'] = ''
 
     if news_page.find('div', class_=['js-article-detail']):
@@ -147,7 +146,7 @@ def main():
     news_link_list, news_img_dict = get_news_list(html)
     diff_links,news_links_all = links_changed(news_link_list)
     if len(diff_links) > 0:
-        print(diff_links)
+        print('jinse>>>>>: ',diff_links)
         update_news_info(diff_links, news_img_dict)
 
 

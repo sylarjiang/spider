@@ -1,7 +1,8 @@
+import os,sys
 
-
-
-MONGODB_CONFIG = {
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+DB_CONFIG = {
     'host' : '192.168.1.200',
     'port' : 27017,
     'auth_db' : 'news_spider',
@@ -9,12 +10,11 @@ MONGODB_CONFIG = {
     'password' : 'gtl1023'
 }
 
-# browserdrive = '/usr/bin/chromedriver'
-browserdrive = 'D:/git/spider/core/chromedriver.exe'
 
+linux_drive = '/usr/bin/chromedriver'
+win_drive = 'D:/git/spider/core/chromedriver.exe'
 
-
-
+browserdrive = win_drive
 
 
 

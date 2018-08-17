@@ -5,11 +5,14 @@ import time
 browserdrive = config.browserdrive
 
 def main():
-    news_jinse.main()
-    time.sleep(3)
-    news_chaindd.main()
-    time.sleep(3)
-    news_8btc.main()
+
+    for i in [news_chaindd, news_8btc, news_jinse]:
+        try:
+            i.main()
+        except Exception as e:
+            print(e)
+        time.sleep(3)
+
 
 
 if __name__ == '__main__':
