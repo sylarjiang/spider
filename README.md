@@ -60,7 +60,7 @@ chmod +x /usr/bin/chromedriver
 
 ```
 # webdirve install(not GUI)
-yuminstall xfvb chrome
+yum install xfvb chrome
 
 and
 ln -s /some_path/webdrive /usr/bin/
@@ -71,16 +71,6 @@ echo 'Xvfb -ac :99 -screen 0 1280x1024x16 & export DISPLAY=:99' > /etc/rc.d/rc.l
 ps -ef |grep chrome |grep -v grep |awk '{print $2}'|xargs kill -9
 ```
 
-```
-requests 检查状态码
-```
-
-
-
-```
-pip install pipreqs
-pipreqs ./ --force
-```
 
 ```
 # install mongodb
