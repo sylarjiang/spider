@@ -18,10 +18,10 @@ def get_html_code(url,link_type=None):
     chrome_option.add_argument('--no-sandbox')
 
     # winconf
-    # browserdrive = 'D:/git/spider/core/chromedriver.exe'
+    browserdrive = 'D:/git/spider/core/chromedriver.exe'
     # driver = webdriver.Chrome(executable_path=browserdrive)
     # linux
-    browserdrive = '/usr/bin/chromedriver'
+    # browserdrive = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
 
     driver.get(url)
@@ -113,7 +113,7 @@ def news_page_info(link,img=''):
         news['news_time'] = news_time.get_text().strip()
 
     news['news_keyword'] = ''
-    news['news_source'] = '巴比特'
+    news['news_source'] = '8btc'
     news['news_synopsis'] = ''
 
     news_content_code = news_page.find('div', {'class': 'bbt-html'})

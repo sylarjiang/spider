@@ -108,7 +108,7 @@ def news_page_info(link,img=''):
         news['news_time'] = news_page.find('span', class_='time').get_text().strip()
 
     news['news_keyword'] = ''
-    news['news_source'] = '链得得'
+    news['news_source'] = 'chaindd'
 
     if news_page.find('p', class_='post-abstract'):
         news['news_synopsis'] = news_page.find('p', class_='post-abstract').get_text().strip()

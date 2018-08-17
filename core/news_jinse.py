@@ -15,10 +15,10 @@ def get_html_code(url,link_type=None):
     chrome_option.add_argument('--disable-gpu')
     chrome_option.add_argument('--nosand-box')
     # winconf
-    # browserdrive = 'D:/git/spider/core/chromedriver.exe'
+    browserdrive = 'D:/git/spider/core/chromedriver.exe'
     # driver = webdriver.Chrome(executable_path=browserdrive)
     # linux
-    browserdrive = '/usr/bin/chromedriver'
+    # browserdrive = '/usr/bin/chromedriver'
     driver = webdriver.Chrome(executable_path=browserdrive,chrome_options=chrome_option)
     driver.get(url)
 
@@ -109,7 +109,7 @@ def news_page_info(link,img=''):
         news['news_time'] = news_page.find('div', class_='time').get_text().strip()
 
     news['news_keyword'] = ''
-    news['news_source'] = '金色财经'
+    news['news_source'] = 'jinsecaijing'
     news['news_synopsis'] = ''
 
     if news_page.find('div', class_=['js-article-detail']):
