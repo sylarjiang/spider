@@ -154,9 +154,6 @@ if __name__ == '__main__':
 
 
 
-# link = 'https://www.8btc.com/article/253950'
-#
-# news_page = get_html_code(link, 'news_info')
 
 
 
