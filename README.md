@@ -87,19 +87,23 @@ sudo mkdir /data/mongodb/{run,log,lib/mongodb} -p
 sudo chown mongod.mongod -R /data/mongodb
 
 tee /etc/mongod.conf <<-FOE
-# mongod.conf
-bind_ip = 10.138.0.33
-port = 27017
-fork = true
-master = true
-pidfilepath = /data/mongodb/run/mongodb.pid
-logpath = /data/mongodb/log/mongodb.log
-dbpath  = /data/mongodb/lib/mongodb
-journal = true
-directoryperdb = true
-logappend = true
-#auth = true
-#KeyFile=/data/mongodb/keyfile/keyfile
+systemLog:
+  destination: file
+  logAppend: true
+  path: /data/mongodb/log/mongodb.log
+storage:
+  dbPath: /data/mongodb/lib/mongodb
+  journal:
+    enabled: true
+processManagement:
+  fork: true
+  pidFilePath: /data/mongodb/run/mongodb.pid
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+security:
+#  authorization: enabled
+  javascriptEnabled: false
 FOE
 
 systemctl enable mongod
