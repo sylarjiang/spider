@@ -94,7 +94,7 @@ def news_page_info(link,img=''):
 
     news = {}
     news_page = get_html_code(link, 'news_info')
-    today = time.strftime("%Y/%m/%d-%H:%M:%S")
+    today = time.strftime("%Y-%m-%d %H:%M:%S")
     news['spider_time'] = today
     news['news_link'] = link
     news['news_img'] = img
