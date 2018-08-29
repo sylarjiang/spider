@@ -96,7 +96,10 @@ def news_page_info(link,img=''):
     news_page = get_html_code(link, 'news_info')
     today = time.strftime("%Y-%m-%d %H:%M:%S")
     news['spider_time'] = today
+    from core.tool_func import check_url
+    link = check_url('https://www.jinse.com/',link)
     news['news_link'] = link
+    img = check_url('https://www.jinse.com/', img)
     news['news_img'] = img
     if news_page.find('h2'):
         news['news_title'] = news_page.find('h2').get_text().strip()

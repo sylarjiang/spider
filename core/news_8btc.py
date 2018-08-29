@@ -88,11 +88,17 @@ def string_format(doc,format_type=''):
 
 def news_page_info(link,img=''):
     news = {}
+
     news_page = get_html_code(link, 'news_info')
     today = time.strftime("%Y-%m-%d %H:%M:%S")
     news['spider_time'] = today
+
+    from core.tool_func import check_url
+    link = check_url('https://www.8btc.com',link)
     news['news_link'] = link
+    img = check_url('https://www.8btc.com', img)
     news['news_img'] = img
+
     if news_page.find('h1'):
         news['news_title'] = news_page.find('h1').get_text().strip()
 
