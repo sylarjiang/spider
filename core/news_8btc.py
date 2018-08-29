@@ -92,11 +92,10 @@ def news_page_info(link,img=''):
     news_page = get_html_code(link, 'news_info')
     today = time.strftime("%Y-%m-%d %H:%M:%S")
     news['spider_time'] = today
+    news['news_link'] = link
 
     from core.tool_func import check_url
-    link = check_url('https://www.8btc.com',link)
-    news['news_link'] = link
-    img = check_url('https://www.8btc.com', img)
+    img = check_url(img)
     news['news_img'] = img
 
     if news_page.find('h1'):
