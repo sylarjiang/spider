@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
+import random
 from bs4 import BeautifulSoup as bsp4
 from bs4 import Comment
 from core.db_conn import db_connected as db_func
@@ -105,26 +106,41 @@ def news_page_info(link,img=''):
     if news_page.find('h2'):
         news['news_title'] = news_page.find('h2').get_text().strip()
 
-    if news_page.find('div', class_='article-info').find('a'):
-        news['news_author'] = news_page.find('div', class_='article-info').find('a').get_text().strip()
+    if news_page.find('div', class_='article-info'):
+        if news_page.find('div', class_='article-info').find('a'):
+            news['news_author'] = news_page.find('div', class_='article-info').find('a').get_text().strip()
 
     if news_page.find('div', class_='time'):
         news['news_time'] = news_page.find('div', class_='time').get_text().strip()
+    else:
+        news['news_time'] = ''
+
+    ntime = int(len(news['news_time']))
+    if ntime>=9:
+        if news['news_time'].index('/') > -1:
+            news['news_time'] = news['news_time'].replace('/', '-')
+        news['news_time'] = news['news_time'][0:10]
+    else:
+        news['news_time'] = time.strftime("%Y-%m-%d")
 
     news['news_keyword'] = ''
     news['news_source'] = 'www.jinse.com'
     news['news_synopsis'] = ''
 
     if news_page.find('div', class_=['js-article-detail']):
+        status = '1'
         news_content_code = news_page.find('div', class_=['js-article-detail'])
-
-    for i in news_content_code(text=lambda text: isinstance(text, Comment)):
-        i.extract()
+        for i in news_content_code(text=lambda text: isinstance(text, Comment)):
+            i.extract()
+    else:
+        news_content_code = ''
+        status = '0'
 
     news['news_content'] = str(filter_html_tags(string_format(news_content_code)))
-    news['status'] = '0'
-    news['scan_count'] = 0
-    news['category_id'] = ''
+    news['status'] = status
+    news['scan_count'] = random.randint(50,100)
+    # 英文5b891c6d5dc0ab7f4a64bf54
+    news['category_id'] = '5b891c4b5dc0ab7f53602a11'
     from hashlib import md5
     news['news_md5'] = str(md5(news['news_content'].encode()).hexdigest())
     return news
@@ -139,7 +155,7 @@ def update_news_info(links,news_img_dict):
             else:
                 news_img = ''
             news = news_page_info(link, news_img)
-
+            print(news)
             if news is not None:
                 col = db_func(col='news_content')
                 col.insert_one(news)
@@ -149,9 +165,9 @@ def main():
     html = get_html_code(url)
     news_link_list, news_img_dict = get_news_list(html)
     diff_links,news_links_all = links_changed(news_link_list)
-    if len(diff_links) > 0:
-        print('jinse>>>>>: ',diff_links)
-        update_news_info(diff_links, news_img_dict)
+    if len(news_links_all) > 0:
+        print('jinse>>>>>: ',news_links_all)
+        update_news_info(news_links_all, news_img_dict)
 
 
 if __name__ == '__main__':
