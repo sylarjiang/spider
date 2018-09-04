@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
+import random
 from bs4 import BeautifulSoup as bsp4
 from bs4 import Comment
 from core.db_conn import db_connected as db_func
@@ -101,8 +102,9 @@ def news_page_info(link,img=''):
     if news_page.find('h1'):
         news['news_title'] = news_page.find('h1').get_text().strip()
 
-    if news_page.find('span', {'class': 'header__info-item'}).find('a'):
-        news['news_author'] = news_page.find('span', {'class': 'header__info-item'}).find('a').get_text().strip()
+    if news_page.find('span', {'class': 'header__info-item'}):
+        if news_page.find('span', {'class': 'header__info-item'}).find('a'):
+            news['news_author'] = news_page.find('span', {'class': 'header__info-item'}).find('a').get_text().strip()
 
     if news_page.find('span', {'class': 'header__info-item'}):
         news_time = news_page.find('span', {'class': 'header__info-item'})
@@ -112,19 +114,32 @@ def news_page_info(link,img=''):
             drop_str = news_time.find('span').extract()
 
         news['news_time'] = news_time.get_text().strip()
+    else:
+        news['news_time'] = ''
+
+    ntime = int(len(news['news_time']))
+    if ntime >= 9:
+        news['news_time'] = news['news_time'][0:10]
+    else:
+        news['news_time'] = time.strftime("%Y-%m-%d")
 
     news['news_keyword'] = ''
     news['news_source'] = 'www.8btc.com'
     news['news_synopsis'] = ''
 
-    news_content_code = news_page.find('div', {'class': 'bbt-html'})
-    for i in news_content_code(text=lambda text: isinstance(text, Comment)):
-        i.extract()
+    if news_page.find('div', {'class': 'bbt-html'}):
+        status = '1'
+        news_content_code = news_page.find('div', {'class': 'bbt-html'})
+        for i in news_content_code(text=lambda text: isinstance(text, Comment)):
+            i.extract()
+    else:
+        news_content_code = ''
+        status = '0'
 
     news['news_content'] = str(filter_html_tags(string_format(news_content_code)))
-    news['status'] = '0'
-    news['scan_count'] = 0
-    news['category_id'] = ''
+    news['status'] = status
+    news['scan_count'] = random.randint(50,100)
+    news['category_id'] = config.category_id
     from hashlib import md5
     news['news_md5'] = str(md5(news['news_content'].encode()).hexdigest())
     return news

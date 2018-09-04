@@ -117,7 +117,7 @@ def news_page_info(link,img=''):
 
     ntime = int(len(news['news_time']))
     if ntime>=9:
-        if news['news_time'].index('/') > -1:
+        if news['news_time'].find('/') >= 0:
             news['news_time'] = news['news_time'].replace('/', '-')
         news['news_time'] = news['news_time'][0:10]
     else:
@@ -140,7 +140,7 @@ def news_page_info(link,img=''):
     news['status'] = status
     news['scan_count'] = random.randint(50,100)
     # 英文5b891c6d5dc0ab7f4a64bf54
-    news['category_id'] = '5b891c4b5dc0ab7f53602a11'
+    news['category_id'] = config.category_id
     from hashlib import md5
     news['news_md5'] = str(md5(news['news_content'].encode()).hexdigest())
     return news

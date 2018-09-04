@@ -1,10 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
+import random
 from bs4 import BeautifulSoup as bsp4
 from bs4 import Comment
 from core.db_conn import db_connected as db_func
 from conf import config
+from datetime import date, timedelta
 
 
 url = 'http://www.chaindd.com'
@@ -109,22 +111,39 @@ def news_page_info(link,img=''):
 
     if news_page.find('span', class_='time'):
         news['news_time'] = news_page.find('span', class_='time').get_text().strip()
+    else:
+        news['news_time'] = ''
+
+    ntime = int(len(news['news_time']))
+    if ntime >= 6:
+        if news['news_time'].find('月')>=0:
+            news['news_time'] = news['news_time'].replace('月', '-')
+            news['news_time'] = news['news_time'].replace('日', '')
+            news['news_time'] = time.strftime("%Y") + '-' + news['news_time']
+    elif news['news_time'].find('昨天')>=0:
+        news['news_time'] = (date.today() + timedelta(days = -1)).strftime("%Y-%m-%d")
+    else:
+        news['news_time'] = time.strftime("%Y-%m-%d")
 
     news['news_keyword'] = ''
     news['news_source'] = 'www.chaindd.com'
 
     if news_page.find('p', class_='post-abstract'):
         news['news_synopsis'] = news_page.find('p', class_='post-abstract').get_text().strip()
-    if news_page.find('article').find('div', class_='inner'):
-        news_content_code = news_page.find('article').find('div', class_='inner')
 
-    for i in news_content_code(text=lambda text: isinstance(text, Comment)):
-        i.extract()
+    news_content_code = ''
+    status = '0'
+    if news_page.find('article'):
+        if news_page.find('article').find('div', class_='inner'):
+            status = '1'
+            news_content_code = news_page.find('article').find('div', class_='inner')
+            for i in news_content_code(text=lambda text: isinstance(text, Comment)):
+                i.extract()
 
     news['news_content'] = str(filter_html_tags(string_format(news_content_code)))
-    news['status'] = '0'
-    news['scan_count'] = 0
-    news['category_id'] = ''
+    news['status'] = status
+    news['scan_count'] = random.randint(50,100)
+    news['category_id'] = config.category_id
     from hashlib import md5
     news['news_md5'] = str(md5(news['news_content'].encode()).hexdigest())
 
@@ -138,8 +157,8 @@ def update_news_info(links,news_img_dict):
             news_img = news_img_dict[link]
         else:
             news_img = ''
-        news = news_page_info(link, news_img)
 
+        news = news_page_info(link, news_img)
         if news is not None:
             col = db_func(col='news_content')
             col.insert_one(news)
