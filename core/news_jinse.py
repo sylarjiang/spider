@@ -137,6 +137,9 @@ def news_page_info(link,img=''):
         status = '0'
 
     news['news_content'] = str(filter_html_tags(string_format(news_content_code)))
+    if news['news_content'] == '' or news['news_title'] == '':
+        news = None
+        return news
     news['status'] = status
     news['scan_count'] = random.randint(50,100)
     # 英文5b891c6d5dc0ab7f4a64bf54
@@ -155,7 +158,6 @@ def update_news_info(links,news_img_dict):
             else:
                 news_img = ''
             news = news_page_info(link, news_img)
-            print(news)
             if news is not None:
                 col = db_func(col='news_content')
                 col.insert_one(news)
@@ -165,9 +167,9 @@ def main():
     html = get_html_code(url)
     news_link_list, news_img_dict = get_news_list(html)
     diff_links,news_links_all = links_changed(news_link_list)
-    if len(news_links_all) > 0:
-        print('jinse>>>>>: ',news_links_all)
-        update_news_info(news_links_all, news_img_dict)
+    if len(diff_links) > 0:
+        print('jinse>>>>>: ',diff_links)
+        update_news_info(diff_links, news_img_dict)
 
 
 if __name__ == '__main__':

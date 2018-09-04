@@ -137,6 +137,9 @@ def news_page_info(link,img=''):
         status = '0'
 
     news['news_content'] = str(filter_html_tags(string_format(news_content_code)))
+    if news['news_content'] == '' or news['news_title'] == '':
+        news = None
+        return news
     news['status'] = status
     news['scan_count'] = random.randint(50,100)
     news['category_id'] = config.category_id
