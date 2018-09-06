@@ -16,6 +16,9 @@ win_drive = 'D:/git/spider/core/chromedriver.exe'
 
 browserdrive = win_drive
 
-category_id = '5b891c4b5dc0ab7f53602a11'
+#线上
+#category_id = '5b891c4b5dc0ab7f53602a11'
+#测试环境
+category_id = '5b7e4ce1c3e9de24a90b9823'
 
 
