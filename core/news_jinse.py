@@ -110,18 +110,7 @@ def news_page_info(link,img=''):
         if news_page.find('div', class_='article-info').find('a'):
             news['news_author'] = news_page.find('div', class_='article-info').find('a').get_text().strip()
 
-    if news_page.find('div', class_='time'):
-        news['news_time'] = news_page.find('div', class_='time').get_text().strip()
-    else:
-        news['news_time'] = ''
-
-    ntime = int(len(news['news_time']))
-    if ntime>=9:
-        if news['news_time'].find('/') >= 0:
-            news['news_time'] = news['news_time'].replace('/', '-')
-        news['news_time'] = news['news_time'][0:10]
-    else:
-        news['news_time'] = time.strftime("%Y-%m-%d")
+    news['news_time'] = time.strftime("%Y-%m-%d")
 
     news['news_keyword'] = ''
     news['news_source'] = 'www.jinse.com'

@@ -109,21 +109,7 @@ def news_page_info(link,img=''):
     if news_page.find('div', class_=['author-cont', 'f1']):
         news['news_author'] = news_page.find('div', class_=['author-cont', 'f1']).find('a').get_text().strip()
 
-    if news_page.find('span', class_='time'):
-        news['news_time'] = news_page.find('span', class_='time').get_text().strip()
-    else:
-        news['news_time'] = ''
-
-    ntime = int(len(news['news_time']))
-    if ntime >= 6:
-        if news['news_time'].find('月')>=0:
-            news['news_time'] = news['news_time'].replace('月', '-')
-            news['news_time'] = news['news_time'].replace('日', '')
-            news['news_time'] = time.strftime("%Y") + '-' + news['news_time']
-    elif news['news_time'].find('昨天')>=0:
-        news['news_time'] = (date.today() + timedelta(days = -1)).strftime("%Y-%m-%d")
-    else:
-        news['news_time'] = time.strftime("%Y-%m-%d")
+    news['news_time'] = time.strftime("%Y-%m-%d")
 
     news['news_keyword'] = ''
     news['news_source'] = 'www.chaindd.com'

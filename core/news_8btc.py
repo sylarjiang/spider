@@ -106,22 +106,7 @@ def news_page_info(link,img=''):
         if news_page.find('span', {'class': 'header__info-item'}).find('a'):
             news['news_author'] = news_page.find('span', {'class': 'header__info-item'}).find('a').get_text().strip()
 
-    if news_page.find('span', {'class': 'header__info-item'}):
-        news_time = news_page.find('span', {'class': 'header__info-item'})
-        while news_time.find('a'):
-            drop_str = news_time.find('a').extract()
-        if news_time.find('span'):
-            drop_str = news_time.find('span').extract()
-
-        news['news_time'] = news_time.get_text().strip()
-    else:
-        news['news_time'] = ''
-
-    ntime = int(len(news['news_time']))
-    if ntime >= 9:
-        news['news_time'] = news['news_time'][0:10]
-    else:
-        news['news_time'] = time.strftime("%Y-%m-%d")
+    news['news_time']= time.strftime("%Y-%m-%d")
 
     news['news_keyword'] = ''
     news['news_source'] = 'www.8btc.com'
