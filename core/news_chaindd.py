@@ -25,6 +25,19 @@ def get_html_code(url,link_type=None):
     driver.get(url)
 
     if link_type == None:
+        '''
+        中文转为英文
+        if driver.find_element_by_class_name('language-box').find_element_by_tag_name('a').text.strip().upper() != 'ENGLISH':
+            ele = driver.find_element_by_class_name('language-box').find_element_by_class_name('current')
+            driver.execute_script("arguments[0].click();", ele)
+        time.sleep(3)
+        '''
+        #英文转为中文
+        if driver.find_element_by_class_name('language-box').find_element_by_tag_name('a').text.strip().upper() != '中文':
+            ele = driver.find_element_by_class_name('language-box').find_element_by_class_name('current')
+            driver.execute_script("arguments[0].click();", ele)
+        time.sleep(3)
+
         for i in range(5):
             driver.find_element_by_class_name('load_more').click()
             time.sleep(3)
