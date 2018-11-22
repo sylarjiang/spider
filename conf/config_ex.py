@@ -21,8 +21,6 @@ browserdrive = win_drive
 #测试环境
 category_id = '5b7e4ce1c3e9de24a90b9823'
 
-
-
 sys.path.insert(0, BASE_DIR)
-print(sys.path)
+
 
